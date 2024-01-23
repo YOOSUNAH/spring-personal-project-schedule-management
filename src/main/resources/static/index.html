@@ -94,26 +94,28 @@
         }
 
         .card {
-          width: 538px;
-          border-radius: 5px;
-          background-color: #ffffff;
-          margin-bottom: 12px;
-          overflow: hidden; /* 내용이 넘치는 경우를 대비하여 추가 */
+            width: 538px;
+            border-radius: 5px;
+            background-color: #ffffff;
+            margin-bottom: 12px;
+            overflow: hidden; /* 내용이 넘치는 경우를 대비하여 추가 */
         }
+
 
         .title,
         .contents,
         .manager,
         .date {
-          padding: 10px 23px;
+            padding: 10px 10px;
         }
+
         .title .text,
         .contents .text,
         .manager .text,
         .date .text {
-          word-wrap: break-word;
-          word-break: break-all;
-          overflow: hidden;
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow: hidden;
         }
 
         .card .metadata {
@@ -127,18 +129,18 @@
         }
 
         .card .metadata .username {
-          border-top: 1px solid #ced4da;
-        }
-        .contents {
-          padding: 0px 23px;
-          word-wrap: break-word;
-          word-break: break-all;
-          border: 1px solid #ced4da;
-          border-radius: 5px;
-          margin-bottom: 12px;
-          overflow: hidden;
+            border-top: 1px solid #ced4da;
         }
 
+        .contents {
+            padding: 0px 23px;
+            word-wrap: break-word;
+            word-break: break-all;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
 
 
         .contents div.edit {
@@ -153,10 +155,11 @@
             font-family: 'Spoqa Han Sans';
             margin-bottom: 10px;
         }
+
         .footer {
-          position: relative;
-          height: 40px;
-          padding: 10px 23px;
+            position: relative;
+            height: 40px;
+            padding: 10px 23px;
         }
 
         .footer img {
@@ -182,18 +185,11 @@
         }
 
         #cards-box {
-            margin-top: 12px;
-        }
-        .details-container {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .details-item {
-            flex: 1;
-            margin-right: 10px;
-        }
 
         .details-item textarea {
             width: calc(100% - 20px); /* 10px 여백 적용 */
@@ -205,6 +201,11 @@
             resize: none;
             margin-bottom: 5px;
         }
+
+        .card.hidden {
+            display: none;
+        }
+
     </style>
     <script>
         // 사용자가 내용을 올바르게 입력하였는지 확인합니다.
@@ -287,7 +288,6 @@
         // 숨길 버튼을 숨기고, 나타낼 버튼을 나타냅니다.
         function editPost(id) {
             showEdits(id);
-
             // 각 필드의 값을 가져오도록 수정
             let title = $(`#${id}-title`).text().trim();
             $(`#${id}-textarea-title`).val(title);
@@ -303,6 +303,7 @@
         }
 
 
+
         function showEdits(id) {
             $(`#${id}-editarea`).show();
             $(`#${id}-submit`).show();
@@ -311,87 +312,80 @@
             $(`#${id}-edit`).hide();
         }
 
-        jQuery(document).ready(function ($) {      // HTML 문서를 로드할 때마다 실행합니다.
-          getMessages();
-        });
-
         // 메모를 불러와서 보여줍니다.
         function getMessages() {
-          // 기존 메모 내용을 지웁니다.
-          $('#cards-box').empty();
-          // 메모 목록을 불러와서 HTML로 붙입니다.
-          $.ajax({
-            type: 'GET',
-            url: '/api/schedules',
-            success: function (response) {
-              for (let i = 0; i < response.length; i++) {
-                let message = response[i];
-                let id = message['id'];
-                let title = message['title'];
-                let contents = message['contents'];
-                let manager = message['manager'];
-                let date = message['date'];
-                addHTML(id, title, contents, manager, date);
-              }
-            }
-          });
+            // 기존 메모 내용을 지웁니다.
+            $('#cards-box').empty();
+            $('.card').removeClass('hidden');
+
+            // 메모 목록을 불러와서 HTML로 붙입니다.
+            $.ajax({
+                type: 'GET',
+                url: '/api/schedules',
+                success: function (response) {
+                    for (let i = 0; i < response.length; i++) {
+                        let message = response[i];
+                        let id = message['id'];
+                        let title = message['title'];
+                        let contents = message['contents'];
+                        let manager = message['manager'];
+                        let date = message['date'];
+                        addHTML(id, title, contents, manager, date);
+                    }
+                }
+            });
         }
 
 
         // 메모 하나를 HTML로 만들어서 body 태그 내 원하는 곳에 붙입니다.
         function addHTML(id, title, contents, manager, date) {
-          // 1. HTML 태그를 만듭니다.
-          let tempHtml = `<div class="card">
+            $(`.card#${id}`).addClass('hidden');
+
+            // 1. HTML 태그를 만듭니다.
+            let tempHtml = `<div class="card">
                 <!-- 일정을 나타내는 부분 -->
                 <div class="card">
                     <!-- 제목(title) -->
                     <div class="title">
                         <div id="${id}-title" class="text">
                             제목: ${title}
-                        </div>
-                        <div id="${id}-editarea-title" class="edit">
-                            <textarea id="${id}-textarea-title" class="te-edit" name="" id="" cols="30" rows="5"></textarea>
-                        </div>
+                      </div>
+                  <textarea class="element" placeholder="수정을 원하시면 제목을 다시 입력해주세요" name="title" id="title" cols="30" rows="10" required></textarea>
                     </div>
                     <!-- 내용(contents) -->
                     <div class="contents">
                         <div id="${id}-contents" class="text">
                             내용: ${contents}
                         </div>
-                        <div id="${id}-editarea-contents" class="edit">
-                            <textarea id="${id}-textarea-contents" class="te-edit" name="" id="" cols="30" rows="5"></textarea>
-                        </div>
+                     <textarea class="field" placeholder="수정을 원하시면 세부 일정 내용을 다시 입력해주세요" name="contents" id="contents" cols="30" rows="10"></textarea>
                     </div>
                     <!-- 담당자(manager) -->
                     <div class="manager">
                         <div id="${id}-manager" class="text">
                             담당자: ${manager}
                         </div>
-                        <div id="${id}-editarea-manager" class="edit">
-                            <textarea id="${id}-textarea-manager" class="te-edit" name="" id="" cols="30" rows="5"></textarea>
-                        </div>
+                <textarea class="element" placeholder="수정을 원하시면 담당자를 다시 입력해주세요" name="manager" id="manager" cols="30" rows="10"></textarea>
+
                     </div>
                     <!-- 작성일자(date) -->
                     <div class="date">
                         <div id="${id}-date" class="text">
                             작성일자: ${date}
                         </div>
-                        <div id="${id}-editarea-date" class="edit">
-                            <textarea id="${id}-textarea-date" class="te-edit" name="" id="" cols="30" rows="5"></textarea>
-                        </div>
-                    </div>
+        <textarea class="element" placeholder=" 수정을 원하시면 작성일자를 다시 입력해주세요. (ex:20230122)" name="date" id="date" cols="30" rows="10" required></textarea>
 
-                    <!-- 버튼 영역-->
-                    <div class="footer">
-                        <img id="${id}-edit" class="icon-start-edit" src="images/edit.png" alt="" onclick="editPost('${id}')">
-                        <img id="${id}-delete" class="icon-delete" src="images/delete.png" alt="" onclick="deleteOne('${id}')">
-                        <img id="${id}-submit" class="icon-end-edit" src="images/done.png" alt="" onclick="submitEdit('${id}')">
                     </div>
+            <div class="footer">
+                <img id="${id}-edit" class="icon-start-edit" src="images/edit.png" alt="" onclick="editPost('${id}')">
+                <img id="${id}-delete" class="icon-delete" src="images/delete.png" alt="" onclick="deleteOne('${id}')">
+                <img id="${id}-submit" class="icon-end-edit" src="images/done.png" alt="" onclick="submitEdit('${id}')">
+            </div>
+
                 </div>
             </div>`;
 
-          // 2. #cards-box 에 HTML을 붙입니다.
-          $('#cards-box').append(tempHtml);
+            // 2. #cards-box 에 HTML을 붙입니다.
+            $('#cards-box').append(tempHtml);
         }
 
 
@@ -435,7 +429,6 @@
             });
         }
 
-        // 메모를 수정합니다.
         function submitEdit(id) {
             // 1. title, contents, manager, date, password을 확인합니다.
             let title = $(`#${id}-textarea-title`).val().trim();
@@ -444,7 +437,7 @@
             let date = $(`#${id}-textarea-date`).val().trim();
             let password = $(`#${id}-textarea-password`).val().trim();
 
-            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+            // 2. 작성한 일정이 올바른지 isValidContents 함수를 통해 확인합니다.
             if (!isValidTitle(title) || !isValidContents(contents) || !isValidManager(manager) || !isValidDate(date) || !isValidPassword(password)) {
                 return;
             }
@@ -473,7 +466,7 @@
 
         // 메모를 삭제합니다.
         function deleteOne(id) {
-            // 1. DELETE /api/schedules/{id} 에 요청해서 메모를 삭제합니다.
+            // 1. DELETE /api/schedules/{id} 에 요청해서 일정을 삭제합니다.
             $.ajax({
                 type: "DELETE",
                 url: `/api/schedules/${id}`,
@@ -512,7 +505,6 @@
     <button class="w-100 btn btn-secondary btn-lg" type="submit" onclick="getMessages()">저장된 일정 목록들 보기</button>
 
 </div>
-
 
 
 <!-- 일정 목록을 표시할 영역 -->
