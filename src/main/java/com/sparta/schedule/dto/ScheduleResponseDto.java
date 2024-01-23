@@ -5,19 +5,28 @@ import lombok.Getter;
 
 @Getter
 public class ScheduleResponseDto {
+    private Long id;
     private String title;
     private String contents;
     private String manager;
-    private int date;
+    private String date;
 
 
     public ScheduleResponseDto(Schedule schedule) {
+        this.id = schedule.getId();
         this.title = schedule.getTitle();
         this.contents = schedule.getContents();
         this.manager = schedule.getManager();
         this.date = schedule.getDate();
     }
 
-    public ScheduleResponseDto(String title, String contents, String manager, int date) {
+    public ScheduleResponseDto(Long id, String title, String contents, String manager, String date) {
+        this.id = id;
+        this.title = title;
+        this.contents = contents;
+        this.manager = manager;
+        this.date = date;
+
     }
+
 }
