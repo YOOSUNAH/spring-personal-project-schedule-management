@@ -90,19 +90,19 @@ public class ScheduleController {
         Schedule schedule = findById(id);
 
         if (schedule != null) {
-//            if (schedule.getPassword() != null) {
-//                if (schedule.getPassword().equals(password)) {
-                    // 일정 수정
+            if (schedule.getPassword() != null) {
+                if (schedule.getPassword().equals(requestDto.getPassword())) {
+                     //일정 수정
                     String sql = "UPDATE schedule SET title = ?, contents = ?, manager = ?, date = ?, password = ? WHERE id = ?";
                     jdbcTemplate.update(sql, requestDto.getTitle(), requestDto.getContents(), requestDto.getManager(), requestDto.getDate(), requestDto.getPassword(), id);
 
                     return id;
-//                } else {
-//                    throw new IllegalArgumentException("비밀번호가 일차하지 않습니다.");
-//                }
-//            } else {
-//                throw new IllegalArgumentException("비밀번호가 없습니다.");
-//            }
+                } else {
+                    throw new IllegalArgumentException("비밀번호가 일차하지 않습니다.");
+                }
+            } else {
+                throw new IllegalArgumentException("비밀번호가 없습니다.");
+            }
         } else {
             throw new IllegalArgumentException("선택한 날에는 일정이 존재하지 않습니다.");
         }
