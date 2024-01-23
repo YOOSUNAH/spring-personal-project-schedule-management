@@ -2,8 +2,10 @@
 
 ## 0. Use Case Diagram, API 명세서, ERD
 
+아래 노션에 보기 편하게 작성되어 있습니다.
+   
 노션 링크 : <https://robust-tiglon-c3e.notion.site/924eb9f5bd264883b0ccfbbeb06a1516>
-아래 내용이 노션에 더 보기 좋게 작성되어 있습니다.
+
 
 ### 1. Use Case Diagram
     아래 링크와 위의 노션링크에서 확인 가능
