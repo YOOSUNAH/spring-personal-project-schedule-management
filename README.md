@@ -23,7 +23,7 @@ Use case Diagram 링크 : <https://www.figma.com/file/tZNPnBOE98KF246S8OCfWH/%5B
     1-2. API 설명 : 일정 추가
     
     2. method : GET
-    2-1. URL :/api/schedules/{scheduleid}
+    2-1. URL :/api/schedules/{id}
     2-2. API 설명 : 선택일정 조회
     
     3. method : GET
@@ -31,11 +31,11 @@ Use case Diagram 링크 : <https://www.figma.com/file/tZNPnBOE98KF246S8OCfWH/%5B
     3-2. API 설명 : 일정 목록 조회
 
     4.  method : PUT
-    4-1. URL :/api/schedules/{scheduleid}
+    4-1. URL :/api/schedules/{id}
     4-2. API 설명 : 선택 일정 수정
     
     5.  method : DELETE
-    5-1. URL :/api/schedules/{scheduleid} 
+    5-1. URL :/api/schedules/{id} 
     5-2.  API 설명 : 선택 일정 삭제
     
 ### 3. ERD
