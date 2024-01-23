@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.web.bind.annotation.*;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -65,14 +66,14 @@ public class ScheduleController {
             }
         });
     }
+
     @GetMapping("/schedules/{id}")
-    public List<ScheduleResponseDto> getOneSchedules() {
+    public ScheduleResponseDto getOneSchedules(@PathVariable Long id) {
         // DB 조회
-        String sql = "SELECT * FROM schedule WHERE id = ?";
-        return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
+        String sql = "SELECT * FROM schedule WHERE id = ?";  // 해당하는 결과 한개만
+        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new RowMapper<ScheduleResponseDto>() { // 해당하는 결과 한개만
             @Override
             public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-                // SQL 의 결과로 받아온 Memo 데이터들을 MemoResponseDto 타입으로 변환해줄 메서드
                 Long id = rs.getLong("id");
                 String title = rs.getString("title");
                 String contents = rs.getString("contents");
@@ -82,16 +83,26 @@ public class ScheduleController {
             }
         });
     }
+
     @PutMapping("/schedules/{id}")
     public Long updateSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto requestDto) {
         // 해당 일정이 DB에 존재하는지 확인
         Schedule schedule = findById(id);
 
         if (schedule != null) {
-            // 일정 수정
-            String sql = "UPDATE schedule SET title = ?, contents = ?, manager = ?, date = ?, password = ? WHERE id = ?";
-            jdbcTemplate.update(sql, requestDto.getTitle(), requestDto.getContents(), requestDto.getManager(), requestDto.getDate(), requestDto.getPassword(), id);
-            return id;
+//            if (schedule.getPassword() != null) {
+//                if (schedule.getPassword().equals(password)) {
+                    // 일정 수정
+                    String sql = "UPDATE schedule SET title = ?, contents = ?, manager = ?, date = ?, password = ? WHERE id = ?";
+                    jdbcTemplate.update(sql, requestDto.getTitle(), requestDto.getContents(), requestDto.getManager(), requestDto.getDate(), requestDto.getPassword(), id);
+
+                    return id;
+//                } else {
+//                    throw new IllegalArgumentException("비밀번호가 일차하지 않습니다.");
+//                }
+//            } else {
+//                throw new IllegalArgumentException("비밀번호가 없습니다.");
+//            }
         } else {
             throw new IllegalArgumentException("선택한 날에는 일정이 존재하지 않습니다.");
         }
@@ -110,6 +121,7 @@ public class ScheduleController {
             throw new IllegalArgumentException("선택한 날에는 일정이 존재하지 않습니다.");
         }
     }
+
     private Schedule findById(Long id) {
         // DB 조회
         String sql = "SELECT * FROM schedule WHERE id = ?";
