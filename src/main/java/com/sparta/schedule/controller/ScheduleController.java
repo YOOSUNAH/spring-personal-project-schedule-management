@@ -3,7 +3,6 @@ package com.sparta.schedule.controller;
 import com.sparta.schedule.dto.ScheduleRequestDto;
 import com.sparta.schedule.dto.ScheduleResponseDto;
 import com.sparta.schedule.entity.Schedule;
-import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -14,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api")
@@ -29,8 +27,8 @@ public class ScheduleController {
     public ScheduleResponseDto createSchedule(@RequestBody ScheduleRequestDto requestDto) {
         // RequestDto -> Entity
         Schedule schedule = new Schedule(requestDto);
-        // DB 저장  // 기본 키를 반환받기 위한 객체
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+        // DB 저장
+        KeyHolder keyHolder = new GeneratedKeyHolder(); // 기본 키를 반환받기 위한 객체
         String sql = "INSERT INTO schedule (title, contents, manager, date, password) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(con -> {
             PreparedStatement preparedStatement = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -46,6 +44,7 @@ public class ScheduleController {
         schedule.setId(id);
         // Entity -> ResponseDto
         ScheduleResponseDto scheduleResponseDto = new ScheduleResponseDto(schedule);
+
         return scheduleResponseDto;
     }
 
@@ -111,5 +110,4 @@ public class ScheduleController {
             }
         }, id);
     }
-
 }

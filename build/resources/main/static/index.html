@@ -6,11 +6,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Schedule Service</title>
 
+<!--  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+<!--  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">-->
+  <!-- jQuery 버전 호환성을 고려하여 코드 수정 -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css">
+
 
   <style>
-    @import url(//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSans-kr.css);
+
 
     body {
       margin: 0;
@@ -115,10 +120,10 @@
       word-break: break-all;
     }
 
+
     .contents div.edit {
       display: none;
     }
-
     .contents textarea.te-edit {
       border: none;
       resize: none;
@@ -161,6 +166,18 @@
   </style>
   <script>
     // 사용자가 내용을 올바르게 입력하였는지 확인합니다.
+    function isValidTitle(title) {
+      if (title == '') {
+        alert('제목을 입력해주세요');
+        return false;
+      }
+      if (title.trim().length > 50) {
+        alert('공백 포함 50자 이하로 입력해주세요');
+        return false;
+      }
+      return true;
+    }
+
     function isValidContents(contents) {
       if (contents == '') {
         alert('내용을 입력해주세요');
@@ -172,6 +189,42 @@
       }
       return true;
     }
+    function isValidManager(manager) {
+      if (manager == '') {
+        alert('내용을 입력해주세요');
+        return false;
+      }
+      if (manager.trim().length > 10) {
+        alert('공백 포함 10자 이하로 입력해주세요');
+        return false;
+      }
+      return true;
+    }
+    function isValidDate(date) {
+      if (date == '') {
+        alert('내용을 입력해주세요');
+        return false;
+      }
+      if (date.trim().length > 10) {
+        alert('공백 포함 10자 이하로 입력해주세요');
+        return false;
+      }
+      return true;
+    }
+    function isValidPassword(password) {
+      if (password == '') {
+        alert('비밀번호를 입력해주세요');
+        return false;
+      }
+      // 비밀번호 유효성 조건 추가 (원하는 조건에 맞게 수정)
+      if (password.trim().length < 6) {
+        alert('비밀번호는 최소 6자 이상이어야 합니다');
+        return false;
+      }
+      return true;
+    }
+
+
 
     // 익명의 username을 만듭니다.
     function genRandomName(length) {
@@ -190,23 +243,33 @@
     // 숨길 버튼을 숨기고, 나타낼 버튼을 나타냅니다.
     function editPost(id) {
       showEdits(id);
+
+      // 각 필드의 값을 가져오도록 수정
+      let title = $(`#${id}-title`).text().trim();
+      $(`#${id}-textarea-title`).val(title);
+
       let contents = $(`#${id}-contents`).text().trim();
-      $(`#${id}-textarea`).val(contents);
+      $(`#${id}-textarea-contents`).val(contents);
+
+      let manager = $(`#${id}-manager`).text().trim();
+      $(`#${id}-textarea-manager`).val(manager);
+
+      let date = $(`#${id}-date`).text().trim();
+      $(`#${id}-textarea-date`).val(date);
     }
+
 
     function showEdits(id) {
       $(`#${id}-editarea`).show();
       $(`#${id}-submit`).show();
       $(`#${id}-delete`).show();
-
       $(`#${id}-contents`).hide();
       $(`#${id}-edit`).hide();
     }
 
-    $(document).ready(function () {
-      // HTML 문서를 로드할 때마다 실행합니다.
+    jQuery(document).ready(function ($) {      // HTML 문서를 로드할 때마다 실행합니다.
       getMessages();
-    })
+    });
 
     // 메모를 불러와서 보여줍니다.
     function getMessages() {
@@ -219,29 +282,32 @@
         success: function (response) {
           for (let i = 0; i < response.length; i++) {
             let message = response[i];
+
             let id = message['id'];
-            let username = message['username'];
+            let title = message['title'];
             let contents = message['contents'];
-            let modifiedAt = message['modifiedAt'];
-            addHTML(id, username, contents, modifiedAt);
+            let manager = message['manager'];
+            let date = message['date'];
+            addHTML(id, title, contents, manager, date);
           }
         }
       })
     }
 
     // 메모 하나를 HTML로 만들어서 body 태그 내 원하는 곳에 붙입니다.
-    function addHTML(id, username, contents, modifiedAt) {
+    function addHTML(id, title, contents, manager, date) {
       // 1. HTML 태그를 만듭니다.
       let tempHtml = `<div class="card">
-                <!-- date/username 영역 -->
-                <div class="metadata">
-                    <div class="date">
-                        ${modifiedAt}
+
+                <div class="title">
+                    <div id="${id}-title" class="text">
+                        ${title}
                     </div>
-                    <div id="${id}-username" class="username">
-                        ${username}
+                    <div id="${id}-editarea" class="edit">
+                        <textarea id="${id}-textarea" class="te-edit" name="" id="" cols="30" rows="5"></textarea>
                     </div>
                 </div>
+
                 <!-- contents 조회/수정 영역-->
                 <div class="contents">
                     <div id="${id}-contents" class="text">
@@ -251,6 +317,26 @@
                         <textarea id="${id}-textarea" class="te-edit" name="" id="" cols="30" rows="5"></textarea>
                     </div>
                 </div>
+
+                 <div class="manager">
+                    <div id="${id}-manager" class="text">
+                        ${title}
+                    </div>
+                    <div id="${id}-editarea" class="edit">
+                        <textarea id="${id}-textarea" class="te-edit" name="" id="" cols="30" rows="5"></textarea>
+                    </div>
+                </div>
+
+   <div class="date">
+                    <div id="${id}-date" class="text">
+                        ${title}
+                    </div>
+                    <div id="${id}-editarea" class="edit">
+                        <textarea id="${id}-textarea" class="te-edit" name="" id="" cols="30" rows="5"></textarea>
+                    </div>
+                </div>
+
+
                 <!-- 버튼 영역-->
                 <div class="footer">
                     <img id="${id}-edit" class="icon-start-edit" src="images/edit.png" alt="" onclick="editPost('${id}')">
@@ -271,15 +357,18 @@
       let date = $('#date').val();
       let password = $('#password').val();
 
+
       // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
-      if (isValidContents(contents) == false) {
+      if (!isValidTitle(title) || !isValidContents(contents) || !isValidManager(manager) || !isValidDate(date) || !isValidPassword(password)) {
         return;
       }
+
       // 3. genRandomName 함수를 통해 익명의 username을 만듭니다.
       let username = genRandomName(10);
 
       // 4. 전달할 data JSON으로 만듭니다.
-      let data = {'username': username,
+      let data = {
+        'title': title,
         'contents': contents,
         'manager': manager,
         'date': date,
@@ -301,17 +390,25 @@
 
     // 메모를 수정합니다.
     function submitEdit(id) {
-      // 1. 작성 대상 메모의 username과 contents 를 확인합니다.
-      let username = $(`#${id}-username`).text().trim();
-      let contents = $(`#${id}-textarea`).val().trim();
+      // 1. title, contents, manager, date, password을 확인합니다.
+      let title = $(`#${id}-textarea-title`).val().trim();
+      let contents = $(`#${id}-textarea-contents`).val().trim();
+      let manager = $(`#${id}-textarea-manager`).val().trim();
+      let date = $(`#${id}-textarea-date`).val().trim();
+      let password = $(`#${id}-textarea-password`).val().trim();
 
       // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
-      if (isValidContents(contents) == false) {
+      if (!isValidTitle(title) || !isValidContents(contents) || !isValidManager(manager) || !isValidDate(date) || !isValidPassword(password)) {
         return;
       }
 
       // 3. 전달할 data JSON으로 만듭니다.
-      let data = {'username': username, 'contents': contents};
+      let data = {
+        'title': title,
+        'contents': contents,
+        'manager':manager,
+        'date':date,
+        'password':password };
 
       // 4. PUT /api/schedules/{id} 에 data를 전달합니다.
       $.ajax({
@@ -342,12 +439,8 @@
 </head>
 
 <body>
-<div class="background-header">
-
-</div>
-<div class="background-body">
-
-</div>
+<div class="background-header"></div>
+<div class="background-body"></div>
 <div class="wrap">
   <div class="header">
     <h2>Schedule</h2>
@@ -356,46 +449,22 @@
     </p>
   </div>
   <div class="area-write">
-    <textarea class="element" placeholder="제목을 입력해주세요" name="title" id="title" cols="30" rows="10" required></textarea>
-    <textarea class="field" placeholder="일정을 입력해주세요" name="contents" id="contents" cols="30" rows="10"></textarea>
+      <textarea class="element" placeholder="제목을 입력해주세요" name="title" id="title" cols="30" rows="10"
+                required></textarea>
+    <textarea class="field" placeholder="세부 일정 내용을 입력해주세요" name="contents" id="contents" cols="30"
+              rows="10"></textarea>
     <textarea class="element" placeholder="담당자를 입력해주세요" name="manager" id="manager" cols="30" rows="10"></textarea>
     <textarea class="element" placeholder="작성일자를 입력해주세요. (ex:20230122)" name="date" id="date" cols="30"
               rows="10"></textarea>
-    <textarea class="element" placeholder="비밀번호를 입력해주세요." name="password" id="password" cols="30" rows="10"></textarea>
+    <textarea class="element" placeholder="비밀번호를 입력해주세요." name="password" id="password" cols="30"
+              rows="10"></textarea>
   </div>
 
-  <button class="w-100 btn btn-secondary btn-lg"
-          type="submit" onclick="writePost()">저장하기
-  </button>
+  <button class="w-100 btn btn-secondary btn-lg" type="submit" onclick="writePost()">저장하기</button>
+</div>
 
-  </div>
-
-
-
-
-  <div id="cards-box" class="area-read">
-    <div class="card">
-      <!-- date/username 영역 -->
-      <div class="metadata">
-        <div class="date">
-          October 10, 2020
-        </div>
-        <div class="username">
-          anonymous
-        </div>
-      </div>
-      <!-- contents 조회/수정 영역-->
-      <div class="contents">
-
-      </div>
-      <!-- 버튼 영역-->
-      <div class="footer">
-        <img id="1-edit" class="icon-start-edit" src="images/edit.png" alt="" onclick="editPost('1')">
-        <img id="1-delete" class="icon-delete" src="images/delete.png" alt="" onclick="deleteOne('1')">
-        <img id="1-submit" class="icon-end-edit" src="images/done.png" alt="" onclick="submitEdit('1')">
-      </div>
-    </div>
-  </div>
+<div id="cards-box" class="area-read">
+  <!-- 기존 카드 요소의 ID 중복 문제 수정 -->
 </div>
 </body>
 
