@@ -9,7 +9,7 @@ GET  /api/schedules
 PUT /api/schedules/{scheduleid}
 DELETE /api/schedules/{scheduleid} 
     
-   3. ERD
+3. ERD
     
     E: `할일 schedule`
     A : 할일은 `고유번호`,`할일 제목`,`할일 내용`,  `비밀번호`, `작성일` 등의 속성을 가진다.
