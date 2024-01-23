@@ -65,11 +65,28 @@ public class ScheduleController {
             }
         });
     }
-
+    @GetMapping("/schedules/{id}")
+    public List<ScheduleResponseDto> getOneSchedules() {
+        // DB 조회
+        String sql = "SELECT * FROM schedule WHERE id = ?";
+        return jdbcTemplate.query(sql, new RowMapper<ScheduleResponseDto>() {
+            @Override
+            public ScheduleResponseDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+                // SQL 의 결과로 받아온 Memo 데이터들을 MemoResponseDto 타입으로 변환해줄 메서드
+                Long id = rs.getLong("id");
+                String title = rs.getString("title");
+                String contents = rs.getString("contents");
+                String manager = rs.getString("manager");
+                String date = rs.getString("date");
+                return new ScheduleResponseDto(id, title, contents, manager, date);
+            }
+        });
+    }
     @PutMapping("/schedules/{id}")
     public Long updateSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto requestDto) {
         // 해당 일정이 DB에 존재하는지 확인
         Schedule schedule = findById(id);
+
         if (schedule != null) {
             // 일정 수정
             String sql = "UPDATE schedule SET title = ?, contents = ?, manager = ?, date = ?, password = ? WHERE id = ?";

@@ -355,34 +355,34 @@
                 <div id="${id}-title" class="text">
                     제목: ${title}
                 </div>
-                <textarea class="element" placeholder="수정을 원하시면 제목을 다시 입력해주세요" name="${id}-title" cols="30" rows="10" required></textarea>
+                <textarea class="element" placeholder="제목 수정" name="${id}-title" cols="30" rows="10" required></textarea>
             </div>
             <!-- 내용(contents) -->
             <div class="contents">
                 <div id="${id}-contents" class="text">
                     내용: ${contents}
                 </div>
-                <textarea class="field" placeholder="수정을 원하시면 세부 일정 내용을 다시 입력해주세요" name="${id}-contents" cols="30" rows="10"></textarea>
+                <textarea class="field" placeholder="세부 일정 내용 수정" name="${id}-contents" cols="30" rows="10"></textarea>
             </div>
             <!-- 담당자(manager) -->
             <div class="manager">
                 <div id="${id}-manager" class="text">
                     담당자: ${manager}
                 </div>
-                <textarea class="element" placeholder="수정을 원하시면 담당자를 다시 입력해주세요" name="${id}-manager" cols="30" rows="10"></textarea>
+                <textarea class="element" placeholder="담당자 수정" name="${id}-manager" cols="30" rows="10"></textarea>
             </div>
             <!-- 작성일자(date) -->
             <div class="date">
                 <div id="${id}-date" class="text">
                     작성일자: ${date}
                 </div>
-                <textarea class="element" placeholder=" 수정을 원하시면 작성일자를 다시 입력해주세요. (ex:20230122)" name="${id}-date" cols="30" rows="10" required></textarea>
+                <textarea class="element" placeholder="작성일자 수정. (ex:20230122)" name="${id}-date" cols="30" rows="10" required></textarea>
             </div>
             <div class="footer">
-<!--                <button class="accordion">상세 정보</button>-->
+
                 <div class="panel">
-<!--                    <p>내용: ${contents}</p>-->
-<!--                    <p>담당자: ${manager}</p>-->
+
+
                 </div>
 <!--                <button class="detail-button" onclick="showDetails('${id}')">일정 상세 조회하기</button>-->
                 <img id="${id}-edit" class="icon-start-edit" src="images/edit.png" alt="" onclick="editPost('${id}')">

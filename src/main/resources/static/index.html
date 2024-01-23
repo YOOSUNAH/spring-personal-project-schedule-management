@@ -183,12 +183,12 @@
             width: 20px;
             height: 15px;
         }
-
         #cards-box {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
+
 
 
         .details-item textarea {
@@ -303,7 +303,6 @@
         }
 
 
-
         function showEdits(id) {
             $(`#${id}-editarea`).show();
             $(`#${id}-submit`).show();
@@ -312,17 +311,20 @@
             $(`#${id}-edit`).hide();
         }
 
-        // 메모를 불러와서 보여줍니다.
+
         function getMessages() {
-            // 기존 메모 내용을 지웁니다.
+            // 기존  내용을 지웁니다.
             $('#cards-box').empty();
             $('.card').removeClass('hidden');
 
-            // 메모 목록을 불러와서 HTML로 붙입니다.
+            //  목록을 불러와서 HTML로 붙입니다.
             $.ajax({
                 type: 'GET',
                 url: '/api/schedules',
                 success: function (response) {
+                    // 작성일 기준으로 내림차순으로 정렬
+                    response.sort((a, b) => new Date(b.date) - new Date(a.date));
+
                     for (let i = 0; i < response.length; i++) {
                         let message = response[i];
                         let id = message['id'];
@@ -332,66 +334,86 @@
                         let date = message['date'];
                         addHTML(id, title, contents, manager, date);
                     }
+                    addAccordion();
                 }
             });
         }
 
 
-        // 메모 하나를 HTML로 만들어서 body 태그 내 원하는 곳에 붙입니다.
+
+
         function addHTML(id, title, contents, manager, date) {
-            $(`.card#${id}`).addClass('hidden');
+            $(`.card#${id}`).remove(); // 기존 카드 삭제
 
             // 1. HTML 태그를 만듭니다.
-            let tempHtml = `<div class="card">
-                <!-- 일정을 나타내는 부분 -->
-                <div class="card">
-                    <!-- 제목(title) -->
-                    <div class="title">
-                        <div id="${id}-title" class="text">
-                            제목: ${title}
-                      </div>
-                  <textarea class="element" placeholder="수정을 원하시면 제목을 다시 입력해주세요" name="title" id="title" cols="30" rows="10" required></textarea>
-                    </div>
-                    <!-- 내용(contents) -->
-                    <div class="contents">
-                        <div id="${id}-contents" class="text">
-                            내용: ${contents}
-                        </div>
-                     <textarea class="field" placeholder="수정을 원하시면 세부 일정 내용을 다시 입력해주세요" name="contents" id="contents" cols="30" rows="10"></textarea>
-                    </div>
-                    <!-- 담당자(manager) -->
-                    <div class="manager">
-                        <div id="${id}-manager" class="text">
-                            담당자: ${manager}
-                        </div>
-                <textarea class="element" placeholder="수정을 원하시면 담당자를 다시 입력해주세요" name="manager" id="manager" cols="30" rows="10"></textarea>
-
-                    </div>
-                    <!-- 작성일자(date) -->
-                    <div class="date">
-                        <div id="${id}-date" class="text">
-                            작성일자: ${date}
-                        </div>
-        <textarea class="element" placeholder=" 수정을 원하시면 작성일자를 다시 입력해주세요. (ex:20230122)" name="date" id="date" cols="30" rows="10" required></textarea>
-
-                    </div>
+            let tempHtml = `
+    <div class="card" id="${id}">
+        <!-- 일정을 나타내는 부분 -->
+        <div class="card">
+            <!-- 제목(title) -->
+            <div class="title">
+                <div id="${id}-title" class="text">
+                    제목: ${title}
+                </div>
+                <textarea class="element" placeholder="제목 수정" name="${id}-title" cols="30" rows="10" required></textarea>
+            </div>
+            <!-- 내용(contents) -->
+            <div class="contents">
+                <div id="${id}-contents" class="text">
+                    내용: ${contents}
+                </div>
+                <textarea class="field" placeholder="세부 일정 내용 수정" name="${id}-contents" cols="30" rows="10"></textarea>
+            </div>
+            <!-- 담당자(manager) -->
+            <div class="manager">
+                <div id="${id}-manager" class="text">
+                    담당자: ${manager}
+                </div>
+                <textarea class="element" placeholder="담당자 수정" name="${id}-manager" cols="30" rows="10"></textarea>
+            </div>
+            <!-- 작성일자(date) -->
+            <div class="date">
+                <div id="${id}-date" class="text">
+                    작성일자: ${date}
+                </div>
+                <textarea class="element" placeholder="작성일자 수정. (ex:20230122)" name="${id}-date" cols="30" rows="10" required></textarea>
+            </div>
             <div class="footer">
+
+                <div class="panel">
+
+
+                </div>
+<!--                <button class="detail-button" onclick="showDetails('${id}')">일정 상세 조회하기</button>-->
                 <img id="${id}-edit" class="icon-start-edit" src="images/edit.png" alt="" onclick="editPost('${id}')">
                 <img id="${id}-delete" class="icon-delete" src="images/delete.png" alt="" onclick="deleteOne('${id}')">
                 <img id="${id}-submit" class="icon-end-edit" src="images/done.png" alt="" onclick="submitEdit('${id}')">
             </div>
-
-                </div>
-            </div>`;
+        </div>
+    </div>`;
 
             // 2. #cards-box 에 HTML을 붙입니다.
             $('#cards-box').append(tempHtml);
         }
 
 
-        // 메모를 생성합니다.
+        //
+        // // 일정 상세 조회 버튼 클릭 시 상세 정보를 보여주는 함수
+        // function showDetails(id) {
+        //     let panel = $(`#${id} .panel`);
+        //     if (panel.css('display') === 'none') {
+        //         panel.show();
+        //     } else {
+        //         panel.hide();
+        //     }
+        // }
+
+
+
+
+        // 일정을 생성합니다.
         function writePost() {
-            // 1. 작성한 메모를 불러옵니다.
+            // 1. 작성한 일정을 불러옵니다.
             let title = $('#title').val();
             let contents = $('#contents').val();
             let manager = $('#manager').val();
@@ -399,7 +421,7 @@
             let password = $('#password').val();
 
 
-            // 2. 작성한 메모가 올바른지 isValidContents 함수를 통해 확인합니다.
+            // 2. 작성한 일정이 올바른지 isValidContents 함수를 통해 확인합니다.
             if (!isValidTitle(title) || !isValidContents(contents) || !isValidManager(manager) || !isValidDate(date) || !isValidPassword(password)) {
                 return;
             }
@@ -464,19 +486,11 @@
             });
         }
 
-        // 메모를 삭제합니다.
-        function deleteOne(id) {
-            // 1. DELETE /api/schedules/{id} 에 요청해서 일정을 삭제합니다.
-            $.ajax({
-                type: "DELETE",
-                url: `/api/schedules/${id}`,
-                success: function (response) {
-                    alert('일정 삭제에 성공하였습니다.');
-                    window.location.reload();
-                }
-            })
-        }
-    </script>
+
+
+
+</script>
+
 </head>
 
 <body>
@@ -490,8 +504,8 @@
         </p>
     </div>
     <div class="area-write">
-      <textarea class="element" placeholder="제목을 입력해주세요" name="title" id="title" cols="30" rows="10"
-                required></textarea>
+            <textarea class="element" placeholder="제목을 입력해주세요" name="title" id="title" cols="30" rows="10"
+                      required></textarea>
         <textarea class="field" placeholder="세부 일정 내용을 입력해주세요" name="contents" id="contents" cols="30"
                   rows="10"></textarea>
         <textarea class="element" placeholder="담당자를 입력해주세요" name="manager" id="manager" cols="30" rows="10"></textarea>
@@ -507,10 +521,12 @@
 </div>
 
 
+
 <!-- 일정 목록을 표시할 영역 -->
 <div id="cards-box" class="area-read">
     <!-- 기존 카드 요소의 ID 중복 문제 수정 -->
 </div>
+
 
 </body>
 
